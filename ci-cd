@@ -1,0 +1,22 @@
+node('master')
+{
+    stage('continousdownload')
+    {
+        git 'https://github.com/iosjsk/download.git'
+    }
+
+    stage('continousbuild')
+    {
+        sh label: '', script: 'mvn package'
+    }
+    stage('continousdeployment')
+    {
+        sh label: '', script: 'scp -i /home/jenkins/qakey.ppk -r /home/jenkins/workspace/pipe2/webapp/target/webapp.war root@3.84.60.3:/usr/local/tomcat/webapps/testapp.war'
+    }
+    stage('continoustetsing')
+    {
+        git 'https://github.com/iosjsk/jenkins.git'
+        sh label: '', script: 'java -jar /home/jenkins/workspace/pipe2/testing.jar'
+    }
+    
+}  
